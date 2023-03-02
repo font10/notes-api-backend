@@ -1,9 +1,12 @@
-const express = require('express')
+require('dotenv').config()
+require('./mongo')
+
 const cors = require('cors')
+const express = require('express')
 const app = express()
+const Note = require('./models/Note')
 
 app.use(cors())
-
 //? Body-parser
 app.use(express.json())
 //const http = require('http')
@@ -14,33 +17,16 @@ app.use(express.json())
   response.end('Hello World')
 })*/
 
-let notes = [
-  {
-    id: 1,
-    content: 'HTML is easy',
-    date: '2019-05-30T17:30:31:098Z',
-    important: false
-  },
-  {
-    id: 2,
-    content: 'Browser can execute only JavaScript',
-    date: '2019-05-30T18:39:34:091Z',
-    important: false
-  },
-  {
-    id: 3,
-    content: 'GET and POST are the most important methods of HTML',
-    date: '2019-05-30T19:20:14:298Z',
-    important: false
-  }
-]
+let notes = []
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World</h1>')
 })
 
 app.get('/api/notes', (request, response) => {
-  response.json(notes);
+  Note.find({}).then(notes => { 
+    response.json(notes)
+  })
 })
 
 app.get('/api/notes/:id', (request, response) => {
@@ -80,7 +66,7 @@ app.post('/api/notes', (request, response) => {
   response.status(201).json(newNote)
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
